@@ -32,7 +32,7 @@ const getAllProps = async (req, res, next) => {
 
 const verifyUser = async (req, res, next) => {
     try{
-        const response = await AdminServices.verifyUser(req.prams.id);
+        const response = await AdminServices.verifyUser(req.params.id);
 
         // send mail to owner
         const sendTo = response.email;
@@ -48,6 +48,17 @@ const verifyUser = async (req, res, next) => {
     } catch(error) {
         console.error("verifyUser --> ", error);
         return next(error);
+    }
+};
+
+const deleteUser = async (req, res, next) => {
+    try{
+        await AdminServices.deleteUser(req.params.id);
+        res.status(200).json({
+            status: "success"
+        });
+    } catch(error) {
+        next(error);
     }
 };
 
@@ -72,9 +83,22 @@ const verifyProp = async (req, res, next) => {
     }
 };
 
+const deleteProp = async (req, res, next) => {
+    try{
+        await AdminServices.deleteProp(req.params.id);
+        res.status(200).json({
+            status: "success"
+        });
+    } catch(error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getAllUsers,
     getAllProps,
     verifyUser,
-    verifyProp 
+    deleteUser,
+    verifyProp,
+    deleteProp
 };

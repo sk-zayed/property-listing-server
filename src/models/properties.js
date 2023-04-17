@@ -37,6 +37,11 @@ const propertySchema = new mongoose.Schema({
         required: true
     },
 
+    zipcode: {
+        type: Number,
+        required: true
+    },
+
     noOfBedrooms: {
         type: Number,
         required: true
