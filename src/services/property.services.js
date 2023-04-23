@@ -16,7 +16,7 @@ const getPropById = (propId) => {
 };
 
 const getByRera = (reraNumber) => {
-    return Properties.findOne({reraNumber});
+    return Properties.findOne({ reraNumber });
 };
 
 const getUsersProps = (userId) => {
@@ -46,15 +46,26 @@ const addToQuery = (userId, propId) => {
 };
 
 const getInterestedUsers = (propId) => {
-    return Queries.findOne({ property: propId }, {interestedUsers: true}).populate("interestedUsers");
+    return Queries.findOne(
+        { property: propId },
+        { interestedUsers: true }
+    ).populate("interestedUsers");
 };
 
 const getMyQueriedProps = (userId) => {
-    return Queries.find({interestedUsers: userId}, {_id: false, property: true}).populate("property");
+    return Queries.find(
+        { interestedUsers: userId },
+        { _id: false, property: true }
+    ).populate("property");
 };
 
-const makePremium = (propId, valid) => {
-    return Property.findByIdAndUpdate(propId, {premium: true, premiumExpiry: new Date().setMonth(new Date().getMonth()+valid)});
+const makePremium = (propId, plan) => {
+    return Property.findByIdAndUpdate(propId, {
+        premium: true,
+        premiumExpiry: new Date().setMonth(new Date().getMonth() + plan.valid),
+        paid: plan.price / 100,
+        paidOn: new Date(),
+    });
 };
 
 module.exports = {

@@ -48,36 +48,33 @@ const createProp = async (req, res, next) => {
 
 const getProps = async (req, res, next) => {
     try {
-        const {
+        let {
             city,
             type,
             furnishing,
-            availabilityStatus,
-            age,
-            noOfRooms,
+            noOfBedrooms,
             minPrice,
             maxPrice,
             minArea,
             maxArea,
-        } = req.body;
-
-        // for
-        // city
-
-        // type
-        // furnishingType
-        // availabilityStatus
-
-        // age
-        // noOfRooms
-        // minPrice
-        // maxPrice
-        // minArea
-        // maxArea
+        } = req.query;
 
         let filterBy = {
-            for: req.body.for,
-            city,
+            for: req.query.for,
+            $or: [
+                {
+                    city: {
+                        $regex: city,
+                        $options: "i",
+                    },
+                },
+                {
+                    description: {
+                        $regex: city,
+                        $options: "i",
+                    },
+                },
+            ],
         };
 
         if (type) {
@@ -101,34 +98,31 @@ const getProps = async (req, res, next) => {
             };
         }
 
+        if (noOfBedrooms) {
+            noOfBedrooms = Number(noOfBedrooms);
+            filterBy = {
+                ...filterBy,
+                noOfBedrooms,
+            };
+        }
+
+        if (maxPrice) {
+            maxPrice = Number(maxPrice);
+            minPrice = Number(minPrice);
+            filterBy["price"] = { $gte: minPrice, $lte: maxPrice };
+        }
+
+        if (maxArea) {
+            maxArea = Number(maxArea);
+            noOfBedrooms = Number(noOfBedrooms);
+            filterBy["builtUpArea"] = { $gte: minArea, $lte: maxArea };
+        }
+
         const response = await PropServices.getProps(filterBy);
-        var filtered = response;
-
-        if (maxPrice)
-            filtered = filtered.filter((property) => {
-                return property.price >= minPrice && property.price <= maxPrice;
-            });
-
-        if (maxArea)
-            filtered = filtered.filter((property) => {
-                return (
-                    property.propArea >= minArea && property.propArea <= maxArea
-                );
-            });
-
-        if (noOfRooms)
-            filtered = filtered.filter((property) => {
-                return property.noOfRooms === noOfRooms;
-            });
-
-        if (age)
-            filtered = filtered.filter((property) => {
-                return property.age <= age;
-            });
 
         res.status(200).json({
             status: "success",
-            data: filtered,
+            data: response,
         });
     } catch (error) {
         console.error("getProps ctrls --> ", error);
@@ -261,27 +255,9 @@ const getMyQueriedProps = async (req, res, next) => {
     }
 };
 
-const propHistory = async (req, res, next) => {
-    try {
-        const owners = ["640d690bd936e05a63d2eeb5", "640de694dccf7117d5ff4afc"];
-        var response = [];
-        for (const ownerId in owners) {
-            const owner = await UserServices.getUserById(owners[ownerId]);
-            response.push(owner);
-        }
-        res.status(200).json({
-            status: "success",
-            data: response,
-        });
-    } catch (error) {
-        console.error("propHistory ctrls --> ", error);
-        return next(error);
-    }
-};
-
 const buyPremium = async (req, res, next) => {
     try {
-        if(res.locals.property.premium) {
+        if (res.locals.property.premium) {
             const error = new Error("Already a premium property!");
             error.name = Errors.Forbidden;
             return next(error);
@@ -323,7 +299,7 @@ const paymentSuccessful = async (req, res, next) => {
     try {
         const response = await PropServices.makePremium(
             req.params.id,
-            Plans[req.body.plan].valid
+            Plans[req.body.plan]
         );
 
         res.status(200).json({
@@ -346,7 +322,6 @@ module.exports = {
     contactOwner,
     getInterestedUsers,
     getMyQueriedProps,
-    propHistory, // incomplete
     buyPremium,
     paymentSuccessful,
 };

@@ -13,7 +13,6 @@ router.delete("/:id", authenticate, propertyExists, owns, PropertyCtrls.deletePr
 router.get("/contact/:id", authenticate, propertyExists, PropertyCtrls.contactOwner);
 router.get("/interested-users/:id", authenticate, propertyExists, owns, PropertyCtrls.getInterestedUsers);
 router.get("/queried", authenticate, PropertyCtrls.getMyQueriedProps);
-router.get("/history/:id", propertyExists, PropertyCtrls.propHistory); // incomplete
 router.post("/premium/:id", authenticate, propertyExists, owns, PropertyCtrls.buyPremium);
 router.patch("/payment-successful/:id", authenticate, propertyExists, owns, PropertyCtrls.paymentSuccessful);
 

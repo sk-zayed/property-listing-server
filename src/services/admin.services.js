@@ -11,7 +11,7 @@ const getAllProps = () => {
 };
 
 const verifyUser = (userId) => {
-    return User.findByIdAndUpdate(userId, {verifiedUser: true});
+    return User.findByIdAndUpdate(userId, { verifiedUser: true });
 };
 
 const deleteUser = (userId) => {
@@ -19,7 +19,9 @@ const deleteUser = (userId) => {
 };
 
 const verifyProp = (propId) => {
-    return Property.findByIdAndUpdate(propId, {verifiedProp: true}).populate("postedBy");
+    return Property.findByIdAndUpdate(propId, { verifiedProp: true }).populate(
+        "postedBy"
+    );
 };
 
 const deleteProp = (propId) => {
@@ -32,5 +34,5 @@ module.exports = {
     verifyUser,
     deleteUser,
     verifyProp,
-    deleteProp
+    deleteProp,
 };

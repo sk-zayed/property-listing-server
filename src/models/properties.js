@@ -4,113 +4,116 @@ const propertySchema = new mongoose.Schema({
     postedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true
+        required: true,
     },
 
     reraNumber: {
         type: String,
-        required: true
+        required: true,
     },
 
     for: {
         type: String,
-        required: true
+        required: true,
     },
 
     type: {
         type: String,
-        required: true
+        required: true,
     },
 
     society: {
         type: String,
-        required: true
+        required: true,
     },
 
     city: {
         type: String,
-        required: true
+        required: true,
     },
 
     state: {
         type: String,
-        required: true
+        required: true,
     },
 
     zipcode: {
         type: Number,
-        required: true
+        required: true,
     },
 
     noOfBedrooms: {
         type: Number,
-        required: true
+        required: true,
     },
 
     noOfBathrooms: {
         type: Number,
-        required: true
+        required: true,
     },
 
     noOfBalconies: {
         type: Number,
-        required: true
+        required: true,
     },
 
     builtUpArea: {
         type: Number,
-        required: true
+        required: true,
     },
 
     furnishing: {
         type: String,
-        required: true
+        required: true,
     },
 
     floor: {
         type: Number,
-        required: true
+        required: true,
     },
 
     totalFloors: {
         type: Number,
-        required: true
+        required: true,
     },
 
-    availabilityStatus: {//
+    availabilityStatus: {
+        //
         type: String,
-        required: false
+        required: false,
     },
 
     age: {
         type: String,
-        required: true
+        required: true,
     },
-    
+
     price: {
         type: Number,
-        required: true
+        required: true,
     },
-    
+
     postedOn: {
         type: Date,
-        default: new Date()
+        default: new Date(),
     },
-    
+
     verifiedProp: {
         type: Boolean,
-        default: false
+        default: false,
     },
-    
+
     premium: {
         type: Boolean,
-        default: false
+        default: false,
     },
 
     premiumExpiry: Date,
-    desc: String,
+    paid: Number,
+    paidOn: Date,
+    description: String,
     lattitude: String,
-    longitude: String,    
+    longitude: String,
 
     //Featues:
     gym: Boolean,
@@ -144,7 +147,6 @@ const propertySchema = new mongoose.Schema({
 
     //Images:
     propImages: String,
-
 });
 
 const Property = mongoose.model("Property", propertySchema);
