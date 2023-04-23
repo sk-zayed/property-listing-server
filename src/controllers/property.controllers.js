@@ -91,13 +91,6 @@ const getProps = async (req, res, next) => {
             };
         }
 
-        if (availabilityStatus) {
-            filterBy = {
-                ...filterBy,
-                availabilityStatus,
-            };
-        }
-
         if (noOfBedrooms) {
             noOfBedrooms = Number(noOfBedrooms);
             filterBy = {

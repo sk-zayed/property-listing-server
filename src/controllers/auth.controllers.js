@@ -15,7 +15,7 @@ const register = async (req, res, next) => {
     try {
         const exist = await AuthServices.getUserByEmail(req.body.email);
 
-        if(exist) {
+        if (exist) {
             const error = new Error("User with email already exists!");
             error.name = Errors.ValidationError;
             return next(error);
@@ -25,9 +25,13 @@ const register = async (req, res, next) => {
         const userObj = user.toObject();
 
         delete userObj.password;
-        
-        const token = jwt.sign({email: user.email}, process.env.JWT_SECRET_KEY, {expiresIn: "1d"});
-        
+
+        const token = jwt.sign(
+            { email: user.email },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: "1d" }
+        );
+
         const sendTo = user.email;
         const subject = "Verify email";
         const verificationURL = `${process.env.BASE_URL}/api/auth/verifyEmail/${token}`;
@@ -44,20 +48,18 @@ const register = async (req, res, next) => {
     }
 };
 
-
 const verifyEmail = async (req, res, next) => {
     try {
         const token = req.params.token;
         const claims = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        
+
         const response = await AuthServices.verifyEmail(claims.email);
 
         res.status(200).json({
             status: "success",
-            data: response
+            data: response,
         });
-
-    } catch(error) {
+    } catch (error) {
         next(error);
     }
 };
@@ -105,24 +107,35 @@ const login = async (req, res, next) => {
     }
 };
 
-const resetPasswordEmail = (req, res, next) => {
+const resetPasswordEmail = async (req, res, next) => {
     try {
         const email = req.body.email;
-        const token = jwt.sign({email}, process.env.JWT_SECRET_KEY, {expiresIn: "1d"});
+
+        const user = await AuthServices.getUserByEmail(email);
+        if (!user) {
+            const error = new Error(
+                `User with email ${req.body.email} does not exist!`
+            );
+            error.name = Errors.BadRequest;
+            return next(error);
+        }
+
+        const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY, {
+            expiresIn: "1d",
+        });
 
         const sendTo = email;
         const subject = "Reset password!";
-        const resetPasswordURL = `${process.env.BASE_URL}/api/auth/resetPassword/${token}`;
+        const resetPasswordURL = `${process.env.BASE_URL}/api/auth/reset-password/${token}`;
         const body = `<p>Click <a href=${resetPasswordURL}>here</a> to reset password.</p>`;
 
         sendMail(sendTo, subject, body);
 
         res.status(200).json({
             status: "success",
-            data: body
+            data: body,
         });
-
-    } catch(error) {
+    } catch (error) {
         next(error);
     }
 };
@@ -134,25 +147,27 @@ const updatePassword = async (req, res, next) => {
 
         const claims = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-        const user = await AuthServices.updatePassword(claims.email, newPassword);
+        const user = await AuthServices.updatePassword(
+            claims.email,
+            newPassword
+        );
 
         const response = user.toObject();
         delete response.password;
 
         res.status(200).json({
             status: "success",
-            data: response
+            data: response,
         });
-    } catch(error) {
+    } catch (error) {
         next(error);
     }
 };
-
 
 module.exports = {
     register,
     verifyEmail,
     login,
     resetPasswordEmail,
-    updatePassword
+    updatePassword,
 };
